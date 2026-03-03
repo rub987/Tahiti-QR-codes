@@ -1,8 +1,23 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let aiInstance: GoogleGenAI | null = null;
+
+const getAI = () => {
+  if (!aiInstance) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.warn("GEMINI_API_KEY is not defined. AI features will not work.");
+      return null;
+    }
+    aiInstance = new GoogleGenAI({ apiKey });
+  }
+  return aiInstance;
+};
 
 export const generateArtisticBackground = async (style: string, description: string) => {
+  const ai = getAI();
+  if (!ai) throw new Error("API Key missing");
+
   const prompt = `A high-quality, artistic and elegant background image for a QR code. 
   Style: ${style}. 
   Description: ${description}. 
@@ -36,6 +51,9 @@ export const generateArtisticBackground = async (style: string, description: str
 };
 
 export const stylizeQRCode = async (qrBase64: string, style: string) => {
+  const ai = getAI();
+  if (!ai) throw new Error("API Key missing");
+
   // This uses the image-to-image capability to "re-imagine" the QR code
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash-image',

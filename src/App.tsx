@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import QRCode from 'qrcode';
+import * as QRCode from 'qrcode';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   QrCode, 
