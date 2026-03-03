@@ -66,10 +66,15 @@ export const stylizeQRCode = async (qrBase64: string, style: string) => {
           },
         },
         {
-          text: `Transform this QR code into a beautiful artistic piece in the style of ${style}. 
-          Keep the overall square structure and the three large corner squares (position markers) clearly visible so it remains scannable. 
-          Integrate Polynesian patterns, tropical flowers, or local textures into the modules of the QR code. 
-          The result should be an artistic QR code that works.`,
+          text: `STRICT SCANNABILITY REQUIREMENT: Transform this QR code into an artistic version in the style of ${style}. 
+          
+          CRITICAL RULES:
+          1. The three large corner squares (FINDER PATTERNS) must remain PERFECTLY SQUARE, SOLID BLACK, and UNTOUCHED. Do not add patterns inside them.
+          2. The small black modules (dots) must remain CLEARLY RECOGNIZABLE as dark elements against a light background.
+          3. Maintain HIGH CONTRAST between the modules and the background.
+          4. You can integrate Polynesian patterns, flowers, or textures ONLY in the background or subtly WITHIN the modules, but the overall grid structure must be preserved.
+          5. Do not distort the square shape of the QR code.
+          6. The result must be a FUNCTIONAL QR code that can be scanned by any phone.`,
         },
       ],
     },

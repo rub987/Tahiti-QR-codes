@@ -15,14 +15,15 @@ import {
   ChevronRight,
   Loader2
 } from 'lucide-react';
+import { VaiLogo } from './components/VaiLogo';
 import { generateArtisticBackground, stylizeQRCode } from './services/gemini';
 import { cn } from './lib/utils';
 
 const STYLES = [
+  { id: 'vai', name: 'Branding VAI', icon: <Sparkles className="w-4 h-4" />, description: 'Intègre le logo et les couleurs de VAI (Eau Royale).' },
   { id: 'tattoo', name: 'Tattoo Polynésien', icon: <Brush className="w-4 h-4" />, description: 'Motifs traditionnels en noir et blanc ou dégradés.' },
   { id: 'tropical', name: 'Fleurs Tropicales', icon: <Flower2 className="w-4 h-4" />, description: 'Hibiscus, Tiaré et végétation luxuriante.' },
   { id: 'landscape', name: 'Paysages de Tahiti', icon: <Waves className="w-4 h-4" />, description: 'Lagons turquoise, montagnes et couchers de soleil.' },
-  { id: 'modern', name: 'Minimaliste Chic', icon: <Palette className="w-4 h-4" />, description: 'Lignes épurées et couleurs élégantes.' },
 ];
 
 export default function App() {
@@ -44,10 +45,11 @@ export default function App() {
 
       // 1. Generate base QR code
       const qrDataUrl = await QRCode.toDataURL(url, {
-        margin: 2,
+        margin: 4,
         width: 1024,
+        errorCorrectionLevel: 'H',
         color: {
-          dark: '#1a1a1a',
+          dark: '#000000',
           light: '#ffffff',
         },
       });
@@ -82,10 +84,11 @@ export default function App() {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="p-6 md:p-10 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-tahiti-ink rounded-xl flex items-center justify-center text-white">
-            <QrCode className="w-6 h-6" />
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center text-tahiti-ink">
+            <VaiLogo className="h-10 md:h-12 w-auto" />
           </div>
+          <div className="h-8 w-[1px] bg-tahiti-ink/10 hidden md:block" />
           <h1 className="text-2xl font-bold tracking-tight text-tahiti-ink">
             Tahiti<span className="serif italic font-light">Artistic</span>QR
           </h1>
@@ -275,10 +278,14 @@ export default function App() {
                 </button>
               </div>
 
-              <div className="max-w-md text-center text-xs text-tahiti-ink/40 leading-relaxed">
-                Note: Les QR codes artistiques utilisent des techniques de vision par ordinateur. 
-                Bien que nous optimisions pour la scannabilité, certains lecteurs anciens pourraient avoir des difficultés. 
-                Nous recommandons un test avec plusieurs appareils.
+              <div className="max-w-md text-center space-y-4">
+                <div className="text-xs text-tahiti-ink/40 leading-relaxed">
+                  Note: Les QR codes artistiques utilisent des techniques de vision par ordinateur. 
+                  Bien que nous optimisions pour la scannabilité, certains lecteurs anciens pourraient avoir des difficultés. 
+                </div>
+                <div className="p-4 bg-tahiti-ocean/5 rounded-2xl border border-tahiti-ocean/10 text-[10px] text-tahiti-ocean font-medium">
+                  CONSEIL : Si le code ne scanne pas, essayez de réduire la luminosité de votre écran ou d'augmenter la taille de l'image.
+                </div>
               </div>
             </motion.div>
           )}
