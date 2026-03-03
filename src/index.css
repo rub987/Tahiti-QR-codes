@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@100..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+  
+  --color-tahiti-sand: #f5f2ed;
+  --color-tahiti-ocean: #0077be;
+  --color-tahiti-hibiscus: #e94e77;
+  --color-tahiti-ink: #1a1a1a;
+}
+
+body {
+  @apply bg-tahiti-sand text-tahiti-ink font-sans;
+}
+
+.serif {
+  @apply font-serif;
+}
+
+/* Custom glass effect */
+.glass {
+  @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
+}
+
+.btn-primary {
+  @apply bg-tahiti-ink text-white px-6 py-3 rounded-full font-medium transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+}
+
+.input-field {
+  @apply w-full px-4 py-3 rounded-2xl border border-tahiti-ink/10 bg-white/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-tahiti-ink/20 transition-all;
+}
