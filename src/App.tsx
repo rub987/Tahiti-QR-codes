@@ -223,13 +223,23 @@ export default function App() {
                   {isGenerating ? (
                     <div className="w-[300px] md:w-[400px] aspect-square flex flex-col items-center justify-center space-y-4">
                       <Loader2 className="w-12 h-12 text-tahiti-ink animate-spin" />
-                      <p className="text-sm font-medium animate-pulse">L'IA façonne votre QR code...</p>
+                      <motion.p 
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="text-sm font-medium animate-pulse"
+                      >
+                        L'IA façonne votre QR code...
+                      </motion.p>
                     </div>
                   ) : (
                     <div className="space-y-6">
                       <div className="w-[300px] md:w-[400px] aspect-square rounded-2xl overflow-hidden shadow-inner bg-white">
                         {finalResult ? (
-                          <img 
+                          <motion.img 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
                             src={finalResult} 
                             alt="Artistic QR Code" 
                             className="w-full h-full object-contain"
