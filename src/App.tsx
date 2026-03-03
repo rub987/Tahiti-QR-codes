@@ -54,14 +54,16 @@ export default function App() {
       setQrCodeData(qrDataUrl);
 
       // 2. Generate artistic background or stylize
-      // We'll try to generate a stylized version directly using the base QR as reference
       const stylePrompt = `${selectedStyle.name}: ${selectedStyle.description} ${customPrompt ? `- ${customPrompt}` : ''}`;
       const stylized = await stylizeQRCode(qrDataUrl, stylePrompt);
       
       setFinalResult(stylized);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Generation failed:", error);
-      alert("La génération a échoué. Veuillez réessayer.");
+      const message = error.message === "API Key missing" 
+        ? "Clé API manquante. Veuillez configurer GEMINI_API_KEY dans vos variables d'environnement."
+        : "La génération a échoué. Veuillez réessayer.";
+      alert(message);
       setStep(1);
     } finally {
       setIsGenerating(false);
