@@ -13,7 +13,9 @@ import {
   Waves,
   Brush,
   ChevronRight,
-  Loader2
+  Loader2,
+  ExternalLink,
+  Globe
 } from 'lucide-react';
 import { VaiLogo } from './components/VaiLogo';
 import { generateArtisticBackground, stylizeQRCode } from './services/gemini';
@@ -84,19 +86,35 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="p-6 md:p-10 flex justify-between items-center">
+      <header className="px-6 py-4 md:px-10 md:py-6 flex justify-between items-center border-b border-tahiti-ink/5">
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center text-tahiti-ink">
-            <VaiLogo className="h-10 md:h-12 w-auto" />
+            <VaiLogo className="h-8 md:h-10 w-auto" />
           </div>
-          <div className="h-8 w-[1px] bg-tahiti-ink/10 hidden md:block" />
-          <h1 className="text-2xl font-bold tracking-tight text-tahiti-ink">
-            Tahiti<span className="serif italic font-light">Artistic</span>QR
-          </h1>
         </div>
-        <div className="hidden md:flex items-center gap-2 text-sm font-medium text-tahiti-ink/60">
-          <MapPin className="w-4 h-4" />
-          <span>Polynésie Française</span>
+
+        <div className="flex items-center gap-3">
+          {/* Language Switcher Pill */}
+          <div className="hidden sm:flex items-center bg-tahiti-ink/5 border border-tahiti-ink/10 rounded-full px-1 py-1">
+            <button className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider bg-tahiti-ocean text-white transition-all">
+              FR
+            </button>
+            <div className="w-[1px] h-3 bg-tahiti-ink/10 mx-1" />
+            <button className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider text-tahiti-ink/40 hover:text-tahiti-ink transition-all">
+              EN
+            </button>
+          </div>
+
+          {/* External Link Pill */}
+          <a 
+            href="https://ai.redsoyu.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-tahiti-ink/5 border border-tahiti-ink/10 rounded-full px-4 py-2 text-[11px] font-bold tracking-tight text-tahiti-ink hover:bg-tahiti-ink hover:text-white transition-all group"
+          >
+            <span>ai.redsoyu.com</span>
+            <ExternalLink className="w-3 h-3 opacity-40 group-hover:opacity-100 transition-opacity" />
+          </a>
         </div>
       </header>
 
@@ -113,7 +131,7 @@ export default function App() {
               <div className="space-y-8">
                 <div className="space-y-4">
                   <h2 className="text-5xl md:text-6xl font-medium leading-[1.1] tracking-tight">
-                    L'élégance du <span className="serif italic">numérique</span> au service du <span className="serif italic">Fenua</span>.
+                    Créer gratuitement un <span className="serif italic">QR code</span> made in <span className="serif italic">fenua</span>.
                   </h2>
                   <p className="text-lg text-tahiti-ink/60 max-w-md">
                     Créez des QR codes uniques qui capturent l'essence de Tahiti. Parfait pour vos menus, cartes de visite ou signalétique.
