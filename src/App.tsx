@@ -86,39 +86,41 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="px-6 py-4 md:px-10 md:py-6 flex justify-between items-center border-b border-tahiti-ink/5">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center justify-center text-tahiti-ink">
-            <VaiLogo className="h-8 md:h-10 w-auto" />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {/* Language Switcher Pill */}
-          <div className="hidden sm:flex items-center bg-tahiti-ink/5 border border-tahiti-ink/10 rounded-full px-1 py-1">
-            <button className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider bg-tahiti-ocean text-white transition-all">
-              FR
-            </button>
-            <div className="w-[1px] h-3 bg-tahiti-ink/10 mx-1" />
-            <button className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider text-tahiti-ink/40 hover:text-tahiti-ink transition-all">
-              EN
-            </button>
+      <header className="border-b border-tahiti-ink/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center justify-center text-tahiti-ink">
+              <VaiLogo className="h-8 md:h-10 w-auto" />
+            </div>
           </div>
 
-          {/* External Link Pill */}
-          <a 
-            href="https://ai.redsoyu.com" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-tahiti-ink/5 border border-tahiti-ink/10 rounded-full px-4 py-2 text-[11px] font-bold tracking-tight text-tahiti-ink hover:bg-tahiti-ink hover:text-white transition-all group"
-          >
-            <span>ai.redsoyu.com</span>
-            <ExternalLink className="w-3 h-3 opacity-40 group-hover:opacity-100 transition-opacity" />
-          </a>
+          <div className="flex items-center gap-3">
+            {/* Language Switcher Pill */}
+            <div className="hidden sm:flex items-center bg-tahiti-ink/5 border border-tahiti-ink/10 rounded-full px-1 py-1">
+              <button className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider bg-tahiti-ocean text-white transition-all">
+                FR
+              </button>
+              <div className="w-[1px] h-3 bg-tahiti-ink/10 mx-1" />
+              <button className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider text-tahiti-ink/40 hover:text-tahiti-ink transition-all">
+                EN
+              </button>
+            </div>
+
+            {/* External Link Pill */}
+            <a 
+              href="https://ai.redsoyu.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-tahiti-ink/5 border border-tahiti-ink/10 rounded-full px-4 py-2 text-[11px] font-bold tracking-tight text-tahiti-ink hover:bg-tahiti-ink hover:text-white transition-all group"
+            >
+              <span>ai.redsoyu.com</span>
+              <ExternalLink className="w-3 h-3 opacity-40 group-hover:opacity-100 transition-opacity" />
+            </a>
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 max-w-6xl mx-auto w-full px-6 pb-20">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-20">
         <AnimatePresence mode="wait">
           {step === 1 ? (
             <motion.div 
