@@ -68,13 +68,13 @@ export const stylizeQRCode = async (qrBase64: string, style: string) => {
         {
           text: `STRICT SCANNABILITY REQUIREMENT: Transform this QR code into an artistic version in the style of ${style}. 
           
-          CRITICAL RULES:
-          1. The three large corner squares (FINDER PATTERNS) must remain PERFECTLY SQUARE, SOLID BLACK, and UNTOUCHED. Do not add patterns inside them.
-          2. The small black modules (dots) must remain CLEARLY RECOGNIZABLE as dark elements against a light background.
-          3. Maintain HIGH CONTRAST between the modules and the background.
-          4. You can integrate Polynesian patterns, flowers, or textures ONLY in the background or subtly WITHIN the modules, but the overall grid structure must be preserved.
-          5. Do not distort the square shape of the QR code.
-          6. The result must be a FUNCTIONAL QR code that can be scanned by any phone.`,
+          CRITICAL RULES FOR FUNCTIONALITY:
+          1. FINDER PATTERNS (the 3 large corner squares): These MUST remain SOLID BLACK and PERFECTLY SQUARE. Do NOT add any faces, patterns, or textures inside the white or black parts of these three corners. They must be pure black and white.
+          2. CONTRAST: The background must be LIGHT and the QR modules (dots) must be DARK. Ensure a very high contrast ratio. If the style is "wood" or "dark", use a light-colored wood or a brightened version of the texture.
+          3. MODULE INTEGRITY: The small black squares (modules) must remain distinct and not bleed into each other.
+          4. NO DISTORTION: Keep the QR code as a perfect flat square. Do not apply 3D effects or perspective warps to the QR grid itself.
+          5. ARTISTIC INTEGRATION: You may add artistic elements (Polynesian patterns, Tiki motifs, flowers) AROUND the QR code and SUBTLY in the background, but they must not interfere with the readability of the black modules.
+          6. The final image MUST be scannable by a standard smartphone camera.`,
         },
       ],
     },
