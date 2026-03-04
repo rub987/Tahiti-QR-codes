@@ -24,6 +24,7 @@ const STYLES = [
   { id: 'tattoo', name: 'Tattoo Polynésien', icon: <Brush className="w-4 h-4" />, description: 'Motifs traditionnels en noir et blanc ou dégradés.' },
   { id: 'tropical', name: 'Fleurs Tropicales', icon: <Flower2 className="w-4 h-4" />, description: 'Hibiscus, Tiaré et végétation luxuriante.' },
   { id: 'landscape', name: 'Paysages de Tahiti', icon: <Waves className="w-4 h-4" />, description: 'Lagons turquoise, montagnes et couchers de soleil.' },
+  { id: 'tiki', name: 'Tiki Sculpté', icon: <Sparkles className="w-4 h-4" />, description: 'Textures de bois sculpté et visages de Tiki traditionnels.' },
 ];
 
 export default function App() {
