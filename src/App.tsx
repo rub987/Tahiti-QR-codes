@@ -20,7 +20,7 @@ import { generateArtisticBackground, stylizeQRCode } from './services/gemini';
 import { cn } from './lib/utils';
 
 const STYLES = [
-  { id: 'vai', name: 'Branding VAI', icon: <Sparkles className="w-4 h-4" />, description: 'Intègre le logo et les couleurs de VAI (Eau Royale).' },
+  { id: 'watercolor', name: 'Aquarelle Tropicale', icon: <Palette className="w-4 h-4" />, description: 'Couleurs douces et textures fluides inspirées de la peinture à l\'eau.' },
   { id: 'tattoo', name: 'Tattoo Polynésien', icon: <Brush className="w-4 h-4" />, description: 'Motifs traditionnels en noir et blanc ou dégradés.' },
   { id: 'tropical', name: 'Fleurs Tropicales', icon: <Flower2 className="w-4 h-4" />, description: 'Hibiscus, Tiaré et végétation luxuriante.' },
   { id: 'landscape', name: 'Paysages de Tahiti', icon: <Waves className="w-4 h-4" />, description: 'Lagons turquoise, montagnes et couchers de soleil.' },
