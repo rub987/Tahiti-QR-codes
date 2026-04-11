@@ -5,10 +5,10 @@ import * as os from 'os';
 import * as path from 'path';
 
 function getAI() {
-  const project = process.env.GOOGLE_CLOUD_PROJECT;
-  const location = process.env.GOOGLE_CLOUD_LOCATION || 'us-central1';
+  const project = process.env.VERTEX_PROJECT;
+  const location = process.env.VERTEX_LOCATION || 'us-central1';
 
-  if (!project) throw new Error('GOOGLE_CLOUD_PROJECT is not set');
+  if (!project) throw new Error('VERTEX_PROJECT is not set');
 
   const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
   if (serviceAccountJson) {
