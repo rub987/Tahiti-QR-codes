@@ -42,14 +42,12 @@ Avoid text or complex small details in the very center.
 Make it look like a professional branding asset.`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-preview-image-generation',
+      model: 'gemini-2.0-flash-exp',
+      config: {
+        responseModalities: ['IMAGE', 'TEXT'],
+      },
       contents: {
         parts: [{ text: prompt }],
-      },
-      config: {
-        imageConfig: {
-          aspectRatio: '1:1',
-        },
       },
     });
 
