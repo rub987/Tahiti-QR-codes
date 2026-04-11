@@ -1,90 +1,33 @@
-import { GoogleGenAI } from "@google/genai";
+// Calls the local Express server which uses Vertex AI for image generation.
 
-let aiInstance: GoogleGenAI | null = null;
-
-const getAI = () => {
-  if (!aiInstance) {
-    const apiKey = process.env.GEMINI_API_KEY || (import.meta as any).env?.VITE_GEMINI_API_KEY;
-    if (!apiKey) {
-      console.warn("GEMINI_API_KEY is not defined. AI features will not work.");
-      return null;
-    }
-    aiInstance = new GoogleGenAI({ apiKey });
-  }
-  return aiInstance;
-};
-
-export const generateArtisticBackground = async (style: string, description: string) => {
-  const ai = getAI();
-  if (!ai) throw new Error("API Key missing");
-
-  const prompt = `A high-quality, artistic and elegant background image for a QR code. 
-  Style: ${style}. 
-  Description: ${description}. 
-  The image should be visually stunning, reflecting the beauty of Tahiti, with a central area that is relatively clean to allow a QR code to be placed on top. 
-  Avoid text or complex small details in the very center. 
-  Make it look like a professional branding asset.`;
-
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash-image',
-    contents: {
-      parts: [
-        {
-          text: prompt,
-        },
-      ],
-    },
-    config: {
-      imageConfig: {
-        aspectRatio: "1:1",
-      },
-    },
+export const generateArtisticBackground = async (style: string, description: string): Promise<string> => {
+  const res = await fetch('/api/generate-background', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ style, description }),
   });
 
-  for (const part of response.candidates?.[0]?.content?.parts || []) {
-    if (part.inlineData) {
-      return `data:image/png;base64,${part.inlineData.data}`;
-    }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to generate background');
   }
-  
-  throw new Error("Failed to generate image");
+
+  const data = await res.json();
+  return data.image;
 };
 
-export const stylizeQRCode = async (qrBase64: string, style: string) => {
-  const ai = getAI();
-  if (!ai) throw new Error("API Key missing");
-
-  // This uses the image-to-image capability to "re-imagine" the QR code
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash-image',
-    contents: {
-      parts: [
-        {
-          inlineData: {
-            data: qrBase64.split(',')[1],
-            mimeType: "image/png",
-          },
-        },
-        {
-          text: `STRICT SCANNABILITY REQUIREMENT: Transform this QR code into an artistic version in the style of ${style}. 
-          
-          CRITICAL RULES FOR FUNCTIONALITY:
-          1. FINDER PATTERNS (the 3 large corner squares): These MUST remain SOLID BLACK and PERFECTLY SQUARE. Do NOT add any faces, patterns, or textures inside the white or black parts of these three corners. They must be pure black and white.
-          2. CONTRAST: The background must be LIGHT and the QR modules (dots) must be DARK. Ensure a very high contrast ratio. If the style is "wood" or "dark", use a light-colored wood or a brightened version of the texture.
-          3. MODULE INTEGRITY: The small black squares (modules) must remain distinct and not bleed into each other.
-          4. NO DISTORTION: Keep the QR code as a perfect flat square. Do not apply 3D effects or perspective warps to the QR grid itself.
-          5. ARTISTIC INTEGRATION: You may add artistic elements (Polynesian patterns, Tiki motifs, flowers) AROUND the QR code and SUBTLY in the background, but they must not interfere with the readability of the black modules.
-          6. The final image MUST be scannable by a standard smartphone camera.`,
-        },
-      ],
-    },
+export const stylizeQRCode = async (qrBase64: string, style: string): Promise<string> => {
+  const res = await fetch('/api/stylize-qr', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ qrBase64, style }),
   });
 
-  for (const part of response.candidates?.[0]?.content?.parts || []) {
-    if (part.inlineData) {
-      return `data:image/png;base64,${part.inlineData.data}`;
-    }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to stylize QR code');
   }
-  
-  throw new Error("Failed to stylize QR code");
+
+  const data = await res.json();
+  return data.image;
 };
