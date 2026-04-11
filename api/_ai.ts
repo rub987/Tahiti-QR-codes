@@ -2,6 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import { writeFileSync } from 'fs';
 
 export const getAI = () => {
+  // Vertex AI — pour les modèles texte
   if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
     const credPath = '/tmp/gcp-credentials.json';
     writeFileSync(credPath, process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
@@ -19,5 +20,17 @@ export const getAI = () => {
       location: process.env.VERTEX_LOCATION || 'us-central1',
     });
   }
-  throw new Error('Missing GOOGLE_SERVICE_ACCOUNT_JSON and VERTEX_PROJECT env vars.');
+  // Gemini API — pour les modèles image (gemini-2.0-flash-preview-image-generation)
+  if (process.env.GEMINI_API_KEY) {
+    return new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  }
+  throw new Error('Missing GOOGLE_SERVICE_ACCOUNT_JSON, VERTEX_PROJECT, or GEMINI_API_KEY env vars.');
+};
+
+// Helper dédié pour les appels image generation (Gemini API uniquement)
+export const getImageAI = () => {
+  if (process.env.GEMINI_API_KEY) {
+    return new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  }
+  throw new Error('GEMINI_API_KEY is required for image generation.');
 };

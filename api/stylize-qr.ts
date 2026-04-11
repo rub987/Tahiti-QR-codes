@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getAI } from './_ai';
+import { getImageAI } from './_ai';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -13,7 +13,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const ai = getAI();
+    const ai = getImageAI();
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.0-flash-preview-image-generation',
