@@ -1,23 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI } from '@google/genai';
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
 
 function getAI() {
-  const project = process.env.VERTEX_PROJECT;
-  const location = process.env.VERTEX_LOCATION || 'us-central1';
-
-  if (!project) throw new Error('VERTEX_PROJECT is not set');
-
-  const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-  if (serviceAccountJson) {
-    const tmpPath = path.join(os.tmpdir(), 'gcp-sa.json');
-    fs.writeFileSync(tmpPath, serviceAccountJson);
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = tmpPath;
-  }
-
-  return new GoogleGenAI({ vertexai: true, project, location });
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error('GEMINI_API_KEY is not set');
+  return new GoogleGenAI({ apiKey });
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -42,12 +29,12 @@ Avoid text or complex small details in the very center.
 Make it look like a professional branding asset.`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
-      config: {
-        responseModalities: ['IMAGE', 'TEXT'],
-      },
+      model: 'gemini-2.0-flash-preview-image-generation',
       contents: {
         parts: [{ text: prompt }],
+      },
+      config: {
+        imageConfig: { aspectRatio: '1:1' },
       },
     });
 
@@ -57,9 +44,9 @@ Make it look like a professional branding asset.`;
       }
     }
 
-    return res.status(500).json({ error: 'No image returned from Vertex AI' });
+    return res.status(500).json({ error: 'No image returned from Gemini' });
   } catch (err: any) {
-    console.error('Vertex AI error:', err);
+    console.error('Gemini error:', err);
     return res.status(500).json({ error: err.message || 'Failed to generate background' });
   }
 }
