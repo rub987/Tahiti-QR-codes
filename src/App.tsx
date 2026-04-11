@@ -1,28 +1,29 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import * as QRCode from 'qrcode';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  QrCode, 
-  Palette, 
-  Download, 
-  RefreshCw, 
-  Sparkles, 
+import {
+  QrCode,
+  Palette,
+  Download,
+  RefreshCw,
+  Sparkles,
   Image as ImageIcon,
-  MapPin,
   Flower2,
   Waves,
   Brush,
   ChevronRight,
   Loader2,
   ExternalLink,
-  Globe
 } from 'lucide-react';
 import { VaiLogo } from './components/VaiLogo';
 import { generateArtisticBackground, stylizeQRCode } from './services/gemini';
-import { cn } from './lib/utils';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 const STYLES = [
-  { id: 'watercolor', name: 'Aquarelle Tropicale', icon: <Palette className="w-4 h-4" />, description: 'Couleurs douces et textures fluides inspirées de la peinture à l\'eau.' },
+  { id: 'watercolor', name: 'Aquarelle Tropicale', icon: <Palette className="w-4 h-4" />, description: "Couleurs douces et textures fluides inspirées de la peinture à l'eau." },
   { id: 'tattoo', name: 'Tattoo Polynésien', icon: <Brush className="w-4 h-4" />, description: 'Motifs traditionnels en noir et blanc ou dégradés.' },
   { id: 'tropical', name: 'Fleurs Tropicales', icon: <Flower2 className="w-4 h-4" />, description: 'Hibiscus, Tiaré et végétation luxuriante.' },
   { id: 'landscape', name: 'Paysages de Tahiti', icon: <Waves className="w-4 h-4" />, description: 'Lagons turquoise, montagnes et couchers de soleil.' },
@@ -34,41 +35,27 @@ export default function App() {
   const [selectedStyle, setSelectedStyle] = useState(STYLES[0]);
   const [customPrompt, setCustomPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [qrCodeData, setQrCodeData] = useState<string | null>(null);
   const [finalResult, setFinalResult] = useState<string | null>(null);
-  const [step, setStep] = useState(1); // 1: Input, 2: Result
-
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [step, setStep] = useState(1);
 
   const generateQR = async () => {
     try {
       setIsGenerating(true);
       setStep(2);
 
-      // 1. Generate base QR code
       const qrDataUrl = await QRCode.toDataURL(url, {
         margin: 4,
         width: 1024,
         errorCorrectionLevel: 'H',
-        color: {
-          dark: '#000000',
-          light: '#ffffff',
-        },
+        color: { dark: '#000000', light: '#ffffff' },
       });
-      setQrCodeData(qrDataUrl);
 
-      // 2. Generate artistic background or stylize
-      const stylePrompt = `${selectedStyle.name}: ${selectedStyle.description} ${customPrompt ? `- ${customPrompt}` : ''}`;
+      const stylePrompt = `${selectedStyle.name}: ${selectedStyle.description}${customPrompt ? ` - ${customPrompt}` : ''}`;
       const stylized = await stylizeQRCode(qrDataUrl, stylePrompt);
-      
       setFinalResult(stylized);
     } catch (error: any) {
-      console.error("Generation failed:", error);
-      const message = error.message === "API Key missing" 
-        ? "Clé API manquante. Veuillez configurer GEMINI_API_KEY dans vos variables d'environnement."
-        : "La génération a échoué. Veuillez réessayer.";
-      alert(message);
+      console.error('Generation failed:', error);
+      alert('La génération a échoué. Veuillez réessayer.');
       setStep(1);
     } finally {
       setIsGenerating(false);
@@ -88,14 +75,10 @@ export default function App() {
       {/* Header */}
       <header className="border-b border-tahiti-ink/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center text-tahiti-ink">
-              <VaiLogo className="h-8 md:h-10 w-auto" />
-            </div>
-          </div>
+          <VaiLogo className="h-8 md:h-10 w-auto text-tahiti-ink" />
 
           <div className="flex items-center gap-3">
-            {/* Language Switcher Pill */}
+            {/* Language switcher */}
             <div className="hidden sm:flex items-center bg-tahiti-ink/5 border border-tahiti-ink/10 rounded-full px-1 py-1">
               <button className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider bg-tahiti-ocean text-white transition-all">
                 FR
@@ -106,10 +89,9 @@ export default function App() {
               </button>
             </div>
 
-            {/* External Link Pill */}
-            <a 
-              href="https://ai.redsoyu.com" 
-              target="_blank" 
+            <a
+              href="https://ai.redsoyu.com"
+              target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 bg-tahiti-ink/5 border border-tahiti-ink/10 rounded-full px-4 py-2 text-[11px] font-bold tracking-tight text-tahiti-ink hover:bg-tahiti-ink hover:text-white transition-all group"
             >
@@ -123,7 +105,7 @@ export default function App() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-20">
         <AnimatePresence mode="wait">
           {step === 1 ? (
-            <motion.div 
+            <motion.div
               key="step1"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -141,36 +123,42 @@ export default function App() {
                 </div>
 
                 <div className="space-y-6">
+                  {/* URL input */}
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-tahiti-ink/40">Lien ou Texte</label>
-                    <input 
-                      type="text" 
+                    <label className="text-xs font-bold uppercase tracking-widest text-tahiti-ink/40">
+                      Lien ou Texte
+                    </label>
+                    <Input
+                      type="text"
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
                       placeholder="https://votre-site.com"
-                      className="input-field"
+                      className="h-12 rounded-2xl border-tahiti-ink/10 bg-white/50 focus-visible:ring-tahiti-ink/20 text-base"
                     />
                   </div>
 
+                  {/* Style picker */}
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-tahiti-ink/40">Style Artistique</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-tahiti-ink/40">
+                      Style Artistique
+                    </label>
                     <div className="grid grid-cols-2 gap-3">
                       {STYLES.map((style) => (
                         <button
                           key={style.id}
                           onClick={() => setSelectedStyle(style)}
                           className={cn(
-                            "flex flex-col items-start p-4 rounded-2xl border transition-all text-left",
-                            selectedStyle.id === style.id 
-                              ? "border-tahiti-ink bg-tahiti-ink text-white shadow-lg" 
-                              : "border-tahiti-ink/10 bg-white/50 hover:bg-white"
+                            'flex flex-col items-start p-4 rounded-2xl border transition-all text-left',
+                            selectedStyle.id === style.id
+                              ? 'border-tahiti-ink bg-tahiti-ink text-white shadow-lg'
+                              : 'border-tahiti-ink/10 bg-white/50 hover:bg-white'
                           )}
                         >
-                          <div className={cn("mb-2 p-2 rounded-lg", selectedStyle.id === style.id ? "bg-white/20" : "bg-tahiti-ink/5")}>
+                          <div className={cn('mb-2 p-2 rounded-lg', selectedStyle.id === style.id ? 'bg-white/20' : 'bg-tahiti-ink/5')}>
                             {style.icon}
                           </div>
                           <span className="font-medium text-sm">{style.name}</span>
-                          <span className={cn("text-[10px] mt-1 leading-tight", selectedStyle.id === style.id ? "text-white/60" : "text-tahiti-ink/40")}>
+                          <span className={cn('text-[10px] mt-1 leading-tight', selectedStyle.id === style.id ? 'text-white/60' : 'text-tahiti-ink/40')}>
                             {style.description}
                           </span>
                         </button>
@@ -178,20 +166,25 @@ export default function App() {
                     </div>
                   </div>
 
+                  {/* Custom prompt */}
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-tahiti-ink/40">Personnalisation (Optionnel)</label>
-                    <textarea 
+                    <label className="text-xs font-bold uppercase tracking-widest text-tahiti-ink/40">
+                      Personnalisation (Optionnel)
+                    </label>
+                    <Textarea
                       value={customPrompt}
                       onChange={(e) => setCustomPrompt(e.target.value)}
                       placeholder="Ex: Ajouter des perles noires, fond sable blanc..."
-                      className="input-field min-h-[80px] resize-none"
+                      className="rounded-2xl border-tahiti-ink/10 bg-white/50 focus-visible:ring-tahiti-ink/20 resize-none min-h-[80px]"
                     />
                   </div>
 
-                  <button 
+                  {/* Generate button */}
+                  <Button
                     onClick={generateQR}
                     disabled={!url || isGenerating}
-                    className="btn-primary w-full flex items-center justify-center gap-2 group"
+                    size="lg"
+                    className="w-full rounded-full bg-tahiti-ink text-white hover:bg-tahiti-ink/90 hover:scale-105 active:scale-95 transition-all h-14 text-base font-medium gap-2"
                   >
                     {isGenerating ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -201,14 +194,15 @@ export default function App() {
                         <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </>
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
 
+              {/* Preview */}
               <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl bg-white/30 border border-white/50 group">
-                <img 
-                  src="https://picsum.photos/seed/tahiti-art/1000/1000" 
-                  alt="Preview" 
+                <img
+                  src="https://picsum.photos/seed/tahiti-art/1000/1000"
+                  alt="Preview"
                   className="w-full h-full object-cover opacity-80 mix-blend-overlay"
                   referrerPolicy="no-referrer"
                 />
@@ -231,7 +225,7 @@ export default function App() {
               </div>
             </motion.div>
           ) : (
-            <motion.div 
+            <motion.div
               key="step2"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -249,7 +243,7 @@ export default function App() {
                   {isGenerating ? (
                     <div className="w-[300px] md:w-[400px] aspect-square flex flex-col items-center justify-center space-y-4">
                       <Loader2 className="w-12 h-12 text-tahiti-ink animate-spin" />
-                      <motion.p 
+                      <motion.p
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
@@ -259,51 +253,51 @@ export default function App() {
                       </motion.p>
                     </div>
                   ) : (
-                    <div className="space-y-6">
-                      <div className="w-[300px] md:w-[400px] aspect-square rounded-2xl overflow-hidden shadow-inner bg-white">
-                        {finalResult ? (
-                          <motion.img 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                            src={finalResult} 
-                            alt="Artistic QR Code" 
-                            className="w-full h-full object-contain"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-tahiti-ink/5">
-                            <QrCode className="w-20 h-20 text-tahiti-ink/10" />
-                          </div>
-                        )}
-                      </div>
+                    <div className="w-[300px] md:w-[400px] aspect-square rounded-2xl overflow-hidden shadow-inner bg-white">
+                      {finalResult ? (
+                        <motion.img
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.8, ease: 'easeOut' }}
+                          src={finalResult}
+                          alt="Artistic QR Code"
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-tahiti-ink/5">
+                          <QrCode className="w-20 h-20 text-tahiti-ink/10" />
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
               </div>
 
               <div className="flex flex-wrap justify-center gap-4">
-                <button 
+                <Button
+                  variant="outline"
                   onClick={() => setStep(1)}
-                  className="px-8 py-4 rounded-full border border-tahiti-ink/10 font-medium hover:bg-white transition-all flex items-center gap-2"
+                  className="px-8 h-14 rounded-full border-tahiti-ink/10 font-medium gap-2"
                 >
                   <RefreshCw className="w-4 h-4" />
                   Recommencer
-                </button>
-                <button 
+                </Button>
+                <Button
                   onClick={downloadImage}
                   disabled={!finalResult}
-                  className="btn-primary px-10 py-4 flex items-center gap-2"
+                  size="lg"
+                  className="px-10 h-14 rounded-full bg-tahiti-ink text-white hover:bg-tahiti-ink/90 gap-2"
                 >
                   <Download className="w-5 h-5" />
                   Télécharger l'image
-                </button>
+                </Button>
               </div>
 
               <div className="max-w-md text-center space-y-4">
-                <div className="text-xs text-tahiti-ink/40 leading-relaxed">
-                  Note: Les QR codes artistiques utilisent des techniques de vision par ordinateur. 
-                  Bien que nous optimisions pour la scannabilité, certains lecteurs anciens pourraient avoir des difficultés. 
-                </div>
+                <p className="text-xs text-tahiti-ink/40 leading-relaxed">
+                  Note : Les QR codes artistiques utilisent des techniques de vision par ordinateur.
+                  Bien que nous optimisions pour la scannabilité, certains lecteurs anciens pourraient avoir des difficultés.
+                </p>
                 <div className="p-4 bg-tahiti-ocean/5 rounded-2xl border border-tahiti-ocean/10 text-[10px] text-tahiti-ocean font-medium">
                   CONSEIL : Si le code ne scanne pas, essayez de réduire la luminosité de votre écran ou d'augmenter la taille de l'image.
                 </div>
