@@ -1,24 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { GoogleGenAI } from '@google/genai';
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
-
-function getAI() {
-  const project = process.env.VERTEX_PROJECT;
-  const location = process.env.VERTEX_LOCATION || 'us-central1';
-
-  if (!project) throw new Error('VERTEX_PROJECT is not set');
-
-  const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-  if (serviceAccountJson) {
-    const tmpPath = path.join(os.tmpdir(), 'gcp-sa.json');
-    fs.writeFileSync(tmpPath, serviceAccountJson);
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = tmpPath;
-  }
-
-  return new GoogleGenAI({ vertexai: true, project, location });
-}
+import { getAI } from './_ai';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
