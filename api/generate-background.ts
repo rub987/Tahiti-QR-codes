@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getImageAI } from './_ai';
+import { getAI } from './_ai';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -13,34 +13,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const ai = getImageAI();
+    const ai = getAI();
 
     const prompt = `A high-quality, artistic and elegant background image for a QR code.
 Style: ${style}.
-Description: ${description || ''}.
-The image should be visually stunning, reflecting the beauty of Tahiti, with a central area that is relatively clean to allow a QR code to be placed on top.
-Avoid text or complex small details in the very center.
-Make it look like a professional branding asset.`;
+${description ? `Description: ${description}.` : ''}
+Inspired by the beauty of Tahiti and French Polynesia.
+The image should be visually stunning with a clean central area to allow a QR code to be placed on top.
+No text, no watermarks.`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-preview-image-generation',
-      contents: {
-        parts: [{ text: prompt }],
-      },
+    const negativePrompt = 'text, words, letters, watermark, logo, people, faces, dark center, busy center';
+
+    const r = await ai.models.generateImages({
+      model: 'imagen-4.0-generate-001',
+      prompt,
       config: {
-        imageConfig: { aspectRatio: '1:1' },
+        numberOfImages: 1,
+        aspectRatio: '1:1',
+        negativePrompt,
       },
     });
 
-    for (const part of response.candidates?.[0]?.content?.parts || []) {
-      if (part.inlineData) {
-        return res.json({ image: `data:image/png;base64,${part.inlineData.data}` });
-      }
-    }
+    const imageBytes = r.generatedImages?.[0]?.image?.imageBytes;
+    if (!imageBytes) throw new Error('No image generated');
 
-    return res.status(500).json({ error: 'No image returned from Vertex AI' });
+    const base64 = typeof imageBytes === 'string'
+      ? imageBytes
+      : Buffer.from(imageBytes).toString('base64');
+
+    return res.json({ image: `data:image/png;base64,${base64}` });
   } catch (err: any) {
-    console.error('Vertex AI error:', err);
+    console.error('Imagen error:', err);
     return res.status(500).json({ error: err.message || 'Failed to generate background' });
   }
 }
