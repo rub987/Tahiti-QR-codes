@@ -16,7 +16,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { VaiLogo } from './components/VaiLogo';
-import { generateArtisticBackground, stylizeQRCode } from './services/gemini';
+import { stylizeQRCode } from './services/gemini';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -310,7 +310,7 @@ export default function App() {
       {/* Footer */}
       <footer className="p-10 border-t border-tahiti-ink/5 text-center space-y-4">
         <p className="text-sm text-tahiti-ink/40">
-          © 2024 Tahiti Artistic QR — L'innovation au cœur du Pacifique.
+          © 2026 Tahiti Artistic QR — L'innovation au cœur du Pacifique.
         </p>
         <div className="flex justify-center gap-6 opacity-30 grayscale hover:grayscale-0 transition-all">
           <ImageIcon className="w-5 h-5" />
