@@ -28,23 +28,35 @@ export async function generateBackground(ai: GoogleGenAI, style: string): Promis
   return Buffer.from(inline.data, 'base64');
 }
 
+const CANVAS = 1024; // final output size
+const PANEL = 820; // white rounded card behind the QR (guarantees quiet zone + contrast)
+const QR = 720; // QR size — centered on the panel
+
 /**
- * Generate a background and composite the QR code on top of it.
- * The QR (white background, black modules) is blended with `multiply`, so white
- * areas let the artwork show through while the dark modules stay scannable.
+ * Generate an artistic background and composite the QR on a clean white rounded
+ * card in the center. The artwork frames the card; the card guarantees the QR
+ * modules keep full black-on-white contrast and an intact quiet zone, so the
+ * code stays reliably scannable (decorations can't bleed onto the modules).
  */
 export async function stylizeQr(ai: GoogleGenAI, qrBase64: string, style: string): Promise<string> {
   const backgroundBuffer = await generateBackground(ai, style);
-  const bg = await sharp(backgroundBuffer).resize(1024, 1024).toBuffer();
+  const bg = await sharp(backgroundBuffer).resize(CANVAS, CANVAS).toBuffer();
+
+  const panel = Buffer.from(
+    `<svg width="${PANEL}" height="${PANEL}"><rect width="${PANEL}" height="${PANEL}" rx="56" ry="56" fill="white"/></svg>`,
+  );
 
   const qrBuffer = Buffer.from(qrBase64.split(',')[1], 'base64');
   const qr = await sharp(qrBuffer)
-    .resize(800, 800)
+    .resize(QR, QR)
     .flatten({ background: { r: 255, g: 255, b: 255 } })
     .toBuffer();
 
   const result = await sharp(bg)
-    .composite([{ input: qr, blend: 'multiply', gravity: 'center' }])
+    .composite([
+      { input: panel, gravity: 'center' },
+      { input: qr, gravity: 'center' },
+    ])
     .png()
     .toBuffer();
 
