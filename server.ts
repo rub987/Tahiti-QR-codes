@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { getAI } from './api/_ai.js';
+import { getImageAI } from './api/_ai.js';
 import { stylizeQr } from './api/_qr.js';
 import { getClientIp, rateLimit } from './api/_rateLimit.js';
 
@@ -20,7 +20,7 @@ app.post('/api/stylize-qr', async (req, res) => {
   if (!qrBase64 || !style) return res.status(400).json({ error: 'qrBase64 and style are required' });
 
   try {
-    const image = await stylizeQr(getAI(), qrBase64, style);
+    const image = await stylizeQr(getImageAI(), qrBase64, style);
     return res.json({ image });
   } catch (err: any) {
     console.error('Error:', err);
