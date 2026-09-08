@@ -21,22 +21,26 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { translations, type Lang, type StyleId } from './lib/i18n';
 
-const STYLES = [
-  { id: 'watercolor', name: 'Aquarelle Tropicale', icon: <Palette className="w-4 h-4" />, description: "Couleurs douces et textures fluides inspirées de la peinture à l'eau." },
-  { id: 'tattoo', name: 'Tattoo Polynésien', icon: <Brush className="w-4 h-4" />, description: 'Motifs traditionnels en noir et blanc ou dégradés.' },
-  { id: 'tropical', name: 'Fleurs Tropicales', icon: <Flower2 className="w-4 h-4" />, description: 'Hibiscus, Tiaré et végétation luxuriante.' },
-  { id: 'landscape', name: 'Paysages de Tahiti', icon: <Waves className="w-4 h-4" />, description: 'Lagons turquoise, montagnes et couchers de soleil.' },
-  { id: 'tiki', name: 'Tiki Sculpté', icon: <Sparkles className="w-4 h-4" />, description: 'Textures de bois clair sculpté et motifs Tiki traditionnels.' },
+const STYLE_META: { id: StyleId; icon: React.ReactNode }[] = [
+  { id: 'watercolor', icon: <Palette className="w-4 h-4" /> },
+  { id: 'tattoo', icon: <Brush className="w-4 h-4" /> },
+  { id: 'tropical', icon: <Flower2 className="w-4 h-4" /> },
+  { id: 'landscape', icon: <Waves className="w-4 h-4" /> },
+  { id: 'tiki', icon: <Sparkles className="w-4 h-4" /> },
 ];
 
 export default function App() {
+  const [lang, setLang] = useState<Lang>('fr');
   const [url, setUrl] = useState('https://tahiti-tourisme.fr');
-  const [selectedStyle, setSelectedStyle] = useState(STYLES[0]);
+  const [selectedStyleId, setSelectedStyleId] = useState<StyleId>('watercolor');
   const [customPrompt, setCustomPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [finalResult, setFinalResult] = useState<string | null>(null);
   const [step, setStep] = useState(1);
+
+  const t = translations[lang];
 
   const generateQR = async () => {
     try {
@@ -50,12 +54,13 @@ export default function App() {
         color: { dark: '#000000', light: '#ffffff' },
       });
 
-      const stylePrompt = `${selectedStyle.name}: ${selectedStyle.description}${customPrompt ? ` - ${customPrompt}` : ''}`;
+      const style = t.styles[selectedStyleId];
+      const stylePrompt = `${style.name}: ${style.description}${customPrompt ? ` - ${customPrompt}` : ''}`;
       const stylized = await stylizeQRCode(qrDataUrl, stylePrompt);
       setFinalResult(stylized);
     } catch (error: any) {
       console.error('Generation failed:', error);
-      alert('La génération a échoué. Veuillez réessayer.');
+      alert(t.genError);
       setStep(1);
     } finally {
       setIsGenerating(false);
@@ -66,7 +71,7 @@ export default function App() {
     if (!finalResult) return;
     const link = document.createElement('a');
     link.href = finalResult;
-    link.download = `tahiti-qr-${selectedStyle.id}.png`;
+    link.download = `tahiti-qr-${selectedStyleId}.png`;
     link.click();
   };
 
@@ -80,11 +85,23 @@ export default function App() {
           <div className="flex items-center gap-3">
             {/* Language switcher */}
             <div className="hidden sm:flex items-center bg-tahiti-ink/5 border border-tahiti-ink/10 rounded-full px-1 py-1">
-              <button className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider bg-tahiti-ocean text-white transition-all">
+              <button
+                onClick={() => setLang('fr')}
+                className={cn(
+                  'px-3 py-1 rounded-full text-[10px] font-bold tracking-wider transition-all',
+                  lang === 'fr' ? 'bg-tahiti-ocean text-white' : 'text-tahiti-ink/40 hover:text-tahiti-ink',
+                )}
+              >
                 FR
               </button>
               <div className="w-[1px] h-3 bg-tahiti-ink/10 mx-1" />
-              <button className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider text-tahiti-ink/40 hover:text-tahiti-ink transition-all">
+              <button
+                onClick={() => setLang('en')}
+                className={cn(
+                  'px-3 py-1 rounded-full text-[10px] font-bold tracking-wider transition-all',
+                  lang === 'en' ? 'bg-tahiti-ocean text-white' : 'text-tahiti-ink/40 hover:text-tahiti-ink',
+                )}
+              >
                 EN
               </button>
             </div>
@@ -115,24 +132,26 @@ export default function App() {
               <div className="space-y-8">
                 <div className="space-y-4">
                   <h2 className="text-5xl md:text-6xl font-medium leading-[1.1] tracking-tight">
-                    Créer gratuitement un <span className="serif italic">QR code</span> made in <span className="serif italic">fenua</span>.
+                    {t.headingPre}
+                    <span className="serif italic">{t.headingEm1}</span>
+                    {t.headingMid}
+                    <span className="serif italic">{t.headingEm2}</span>
+                    {t.headingPost}
                   </h2>
-                  <p className="text-lg text-tahiti-ink/60 max-w-md">
-                    Créez des QR codes uniques qui capturent l'essence de Tahiti. Parfait pour vos menus, cartes de visite ou signalétique.
-                  </p>
+                  <p className="text-lg text-tahiti-ink/60 max-w-md">{t.subtitle}</p>
                 </div>
 
                 <div className="space-y-6">
                   {/* URL input */}
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-tahiti-ink/40">
-                      Lien ou Texte
+                      {t.urlLabel}
                     </label>
                     <Input
                       type="text"
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
-                      placeholder="https://votre-site.com"
+                      placeholder={t.urlPlaceholder}
                       className="h-12 rounded-2xl border-tahiti-ink/10 bg-white/50 focus-visible:ring-tahiti-ink/20 text-base"
                     />
                   </div>
@@ -140,41 +159,45 @@ export default function App() {
                   {/* Style picker */}
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-tahiti-ink/40">
-                      Style Artistique
+                      {t.styleLabel}
                     </label>
                     <div className="grid grid-cols-2 gap-3">
-                      {STYLES.map((style) => (
-                        <button
-                          key={style.id}
-                          onClick={() => setSelectedStyle(style)}
-                          className={cn(
-                            'flex flex-col items-start p-4 rounded-2xl border transition-all text-left',
-                            selectedStyle.id === style.id
-                              ? 'border-tahiti-ink bg-tahiti-ink text-white shadow-lg'
-                              : 'border-tahiti-ink/10 bg-white/50 hover:bg-white'
-                          )}
-                        >
-                          <div className={cn('mb-2 p-2 rounded-lg', selectedStyle.id === style.id ? 'bg-white/20' : 'bg-tahiti-ink/5')}>
-                            {style.icon}
-                          </div>
-                          <span className="font-medium text-sm">{style.name}</span>
-                          <span className={cn('text-[10px] mt-1 leading-tight', selectedStyle.id === style.id ? 'text-white/60' : 'text-tahiti-ink/40')}>
-                            {style.description}
-                          </span>
-                        </button>
-                      ))}
+                      {STYLE_META.map((style) => {
+                        const copy = t.styles[style.id];
+                        const active = selectedStyleId === style.id;
+                        return (
+                          <button
+                            key={style.id}
+                            onClick={() => setSelectedStyleId(style.id)}
+                            className={cn(
+                              'flex flex-col items-start p-4 rounded-2xl border transition-all text-left',
+                              active
+                                ? 'border-tahiti-ink bg-tahiti-ink text-white shadow-lg'
+                                : 'border-tahiti-ink/10 bg-white/50 hover:bg-white',
+                            )}
+                          >
+                            <div className={cn('mb-2 p-2 rounded-lg', active ? 'bg-white/20' : 'bg-tahiti-ink/5')}>
+                              {style.icon}
+                            </div>
+                            <span className="font-medium text-sm">{copy.name}</span>
+                            <span className={cn('text-[10px] mt-1 leading-tight', active ? 'text-white/60' : 'text-tahiti-ink/40')}>
+                              {copy.description}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
                   {/* Custom prompt */}
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-tahiti-ink/40">
-                      Personnalisation (Optionnel)
+                      {t.customLabel}
                     </label>
                     <Textarea
                       value={customPrompt}
                       onChange={(e) => setCustomPrompt(e.target.value)}
-                      placeholder="Ex: Ajouter des perles noires, fond sable blanc..."
+                      placeholder={t.customPlaceholder}
                       className="rounded-2xl border-tahiti-ink/10 bg-white/50 focus-visible:ring-tahiti-ink/20 resize-none min-h-[80px]"
                     />
                   </div>
@@ -190,7 +213,7 @@ export default function App() {
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       <>
-                        Générer mon QR Code Artistique
+                        {t.generate}
                         <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </>
                     )}
@@ -217,8 +240,8 @@ export default function App() {
                       <Sparkles className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-wider opacity-40">Exemple</p>
-                      <p className="text-sm font-medium">Style Tattoo & Hibiscus</p>
+                      <p className="text-xs font-bold uppercase tracking-wider opacity-40">{t.exampleTag}</p>
+                      <p className="text-sm font-medium">{t.exampleTitle}</p>
                     </div>
                   </div>
                 </div>
@@ -233,8 +256,8 @@ export default function App() {
               className="flex flex-col items-center justify-center pt-10 space-y-10"
             >
               <div className="text-center space-y-2">
-                <h2 className="text-4xl font-medium serif italic">Votre œuvre est prête</h2>
-                <p className="text-tahiti-ink/60">Vérifiez la scannabilité avant de l'imprimer.</p>
+                <h2 className="text-4xl font-medium serif italic">{t.resultTitle}</h2>
+                <p className="text-tahiti-ink/60">{t.resultSubtitle}</p>
               </div>
 
               <div className="relative group">
@@ -249,7 +272,7 @@ export default function App() {
                         transition={{ duration: 0.5 }}
                         className="text-sm font-medium animate-pulse"
                       >
-                        L'IA façonne votre QR code...
+                        {t.loading}
                       </motion.p>
                     </div>
                   ) : (
@@ -280,7 +303,7 @@ export default function App() {
                   className="px-8 h-14 rounded-full border-tahiti-ink/10 font-medium gap-2"
                 >
                   <RefreshCw className="w-4 h-4" />
-                  Recommencer
+                  {t.restart}
                 </Button>
                 <Button
                   onClick={downloadImage}
@@ -289,17 +312,14 @@ export default function App() {
                   className="px-10 h-14 rounded-full bg-tahiti-ink text-white hover:bg-tahiti-ink/90 gap-2"
                 >
                   <Download className="w-5 h-5" />
-                  Télécharger l'image
+                  {t.download}
                 </Button>
               </div>
 
               <div className="max-w-md text-center space-y-4">
-                <p className="text-xs text-tahiti-ink/40 leading-relaxed">
-                  Note : Les QR codes artistiques utilisent des techniques de vision par ordinateur.
-                  Bien que nous optimisions pour la scannabilité, certains lecteurs anciens pourraient avoir des difficultés.
-                </p>
+                <p className="text-xs text-tahiti-ink/40 leading-relaxed">{t.note}</p>
                 <div className="p-4 bg-tahiti-ocean/5 rounded-2xl border border-tahiti-ocean/10 text-[10px] text-tahiti-ocean font-medium">
-                  CONSEIL : Si le code ne scanne pas, essayez de réduire la luminosité de votre écran ou d'augmenter la taille de l'image.
+                  {t.tip}
                 </div>
               </div>
             </motion.div>
@@ -309,9 +329,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="p-10 border-t border-tahiti-ink/5 text-center space-y-4">
-        <p className="text-sm text-tahiti-ink/40">
-          © 2026 Tahiti Artistic QR — L'innovation au cœur du Pacifique.
-        </p>
+        <p className="text-sm text-tahiti-ink/40">{t.footer}</p>
         <div className="flex justify-center gap-6 opacity-30 grayscale hover:grayscale-0 transition-all">
           <ImageIcon className="w-5 h-5" />
           <Sparkles className="w-5 h-5" />

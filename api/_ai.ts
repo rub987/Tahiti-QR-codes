@@ -26,11 +26,3 @@ export const getAI = () => {
   }
   throw new Error('Missing GOOGLE_SERVICE_ACCOUNT_JSON, VERTEX_PROJECT, or GEMINI_API_KEY env vars.');
 };
-
-// Helper dédié pour les appels image generation (Gemini API uniquement)
-export const getImageAI = () => {
-  if (process.env.GEMINI_API_KEY) {
-    return new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-  }
-  throw new Error('GEMINI_API_KEY is required for image generation.');
-};
