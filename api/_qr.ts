@@ -1,7 +1,10 @@
 import sharp from 'sharp';
 import type { GoogleGenAI } from '@google/genai';
 
-const IMAGE_MODEL = 'imagen-4.0-generate-001';
+// Overridable via the IMAGEN_MODEL env var (no code change needed to switch models).
+// Imagen 3 (imagen-3.0-generate-002) is the most broadly available on Vertex;
+// bump to imagen-4.0-generate-001 once the project has access to it.
+const IMAGE_MODEL = process.env.IMAGEN_MODEL || 'imagen-3.0-generate-002';
 
 const backgroundPrompt = (style: string) => `A high-quality artistic background for a QR code, style: ${style}.
 Inspired by the beauty of Tahiti and French Polynesia — turquoise lagoons, tropical flowers, Polynesian patterns, lush vegetation.
