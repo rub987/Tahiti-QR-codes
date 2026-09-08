@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getImageAI } from './_ai.js';
+import { getAI } from './_ai.js';
 import { stylizeQr } from './_qr.js';
 import { getClientIp, rateLimit } from './_rateLimit.js';
 
@@ -20,7 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const image = await stylizeQr(getImageAI(), qrBase64, style);
+    const image = await stylizeQr(getAI(), qrBase64, style);
     return res.json({ image });
   } catch (err: any) {
     console.error('Error:', err);
